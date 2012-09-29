@@ -37,7 +37,7 @@ class Core_String
         return $start_char .= self::highlight_words($sub_string, $phrase, $tag_open, $tag_close);
     }
 
-    public static function limit_words($string, $limit = 100, $end_char = '&#8230;')
+    public static function limit_words($string, $limit = 100, $end_char = '&#8230;', $is_html=true)
     {
         if (trim($string) == '')
             return $string;
@@ -47,7 +47,8 @@ class Core_String
         if (strlen($string) == strlen($matches[0]))
             $end_char = '';
 
-        return rtrim($matches[0]).$end_char;
+        $str = rtrim($matches[0]).$end_char;
+        return ($is_html) ? $str.Phpr_Html::get_orphan_tags($str) : $str;
     }
 
     public static function highlight_words($string, $phrase, $tag_open = '<strong>', $tag_close = '</strong>')
@@ -102,46 +103,5 @@ class Core_String
         return implode(PHP_EOL, $return);
 
     }
-
-    // Not used
-    public static function close_open_html_tags($string, $limit = 500, $is_reopen=false)
-    {
-        preg_match_all('/<(.*?)>/s',substr(stripslashes($string), 0, $limit), $out);
-        
-        $html_arr_close = $html_arr_open = array();
-        foreach ($out[1] as $key => $val)
-        {
-            if (preg_match("/br.*/", $val) || empty($val))
-                continue;
-
-            $val_arr = explode(" ", $val);
-            $val = $val_arr[0];
-
-            if(preg_match("/^\//", $val))
-                $html_arr_close[] = strtolower($val);
-            else
-                $html_arr_open[] = strtolower($val);
-        }
-
-        $not_closed_tags = array();
-        foreach ($html_arr_open as $tag)
-        {
-            $key = array_search("/" . $tag, $html_arr_close);
-            if($key !== false)
-                unset($html_arr_close[$key]);
-            else 
-               $not_closed_tags[] = $tag;
-        }
-
-        $closed_tags_str = '';
-        foreach ($not_closed_tags as $tag)
-        {
-            $closed_tags_str .= (!$is_reopen) ? "</" . $tag . ">" : "<" . $tag . ">";
-        }
-
-        return $closed_tags_str;
-
-    }
-
 
 }
