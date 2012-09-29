@@ -48,21 +48,22 @@ class Core_Config_Model extends Phpr_Extension
 
     public function set_config_data()
     {
-        $document = new SimpleXMLExtended('<data></data>');
-        foreach ($this->added_config_columns as $id=>$value)
+        $document = new SimpleXMLElement('<data></data>');
+        foreach ($this->added_config_columns as $field_id=>$value)
         {
+            $value = serialize($this->_model->{$field_id});
             $field_element = $document->addChild('field');
-            $field_element->addChild('id', $id);
-            $value_node = $field_element->addChild('value');
-            $value_node->addCData(serialize($this->_model->{$id}));
+            Core_Xml::create_dom_element($document, $field_element, 'id', $field_id);
+            Core_Xml::create_dom_element($document, $field_element, 'value', $value, true);            
         }
+
         $config_field = $this->config_model_field;
         $this->_model->{$config_field} = $document->asXML();
     }
 
     public function load_config_data()
     {
-    	$config_field = $this->config_model_field;
+        $config_field = $this->config_model_field;
 
         if (!strlen($this->_model->{$config_field}))
             return;
@@ -83,17 +84,4 @@ class Core_Config_Model extends Phpr_Extension
         }
     }
 
-}
-
-if (!class_exists('SimpleXMLExtended'))
-{
-    class SimpleXMLExtended extends SimpleXMLElement
-    {
-        public function addCData($cdata_text)
-        {
-            $node = dom_import_simplexml($this);
-            $no = $node->ownerDocument;
-            $node->appendChild($no->createCDATASection($cdata_text));
-        }
-    }
 }

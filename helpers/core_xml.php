@@ -7,10 +7,17 @@ class Core_Xml
         $cdata_value = $value;
         if ($cdata)
             $value = null;
-        
-        $element = $document->createElement($name, $value);
-        $parent->appendChild($element);
-        
+
+        if ($document instanceof SimpleXMLElement)
+        {
+            $element = $parent->addChild($name, $value);
+        }
+        else
+        {
+            $element = $document->createElement($name, $value);
+            $parent->appendChild($element);
+        }
+
         if ($cdata)
             return self::create_cdata($document, $element, $cdata_value);
         
@@ -19,6 +26,12 @@ class Core_Xml
 
     public static function create_cdata($document, $parent, $value)
     {
+        if ($document instanceof SimpleXMLElement)
+        {
+            $parent = dom_import_simplexml($parent);
+            $document = $parent->ownerDocument;
+        }
+            
         $element = $document->createCDATASection($value);
         $parent->appendChild($element);
         
