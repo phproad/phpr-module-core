@@ -56,7 +56,8 @@ class Core_Xml
                     $node_path = $orig_path = $parent_path.'_'.$child->nodeName;
                 else
                     $node_path = $orig_path = $parent_path;
-            } else
+            } 
+            else
             {
                 if (!($child instanceof DOMText))
                     $node_path = $orig_path = $child->nodeName;
