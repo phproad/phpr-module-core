@@ -71,15 +71,17 @@ class Core_Config_Model extends Phpr_Extension
         $object = new SimpleXMLElement($this->_model->{$config_field});
         foreach ($object->children() as $child)
         {
-            $code = $child->id;
+            $field_id = (string)$child->id;
             try 
             {
-                $this->_model->$code = unserialize($child->value);
+                $this->_model->$field_id = unserialize($child->value);
+                $this->_model->fetched[$field_id] = unserialize($child->value);
             }
             catch (Exception $ex)
             {
-                $this->_model->$code = "NaN";
-                trace_log(sprintf('Core_Config_Model was unable to parse %s in %s', $code, get_class($this->_model)));
+                $this->_model->$field_id = "NaN";
+                $this->_model->fetched[$field_id] = "NaN";
+                trace_log(sprintf('Core_Config_Model was unable to parse %s in %s', $field_id, get_class($this->_model)));
             }
         }
     }
