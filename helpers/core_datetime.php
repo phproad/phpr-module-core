@@ -60,4 +60,23 @@ class Core_DateTime
 
 		return $datetime->substractDateTime(Phpr_DateTime::now())->intervalAsString();		
 	}
+
+	public static function format_safe($value, $format='%x')
+	{
+		if ($value instanceof Phpr_DateTime) 
+			return $value->format($format);
+		else
+		{
+			$len = strlen($value);
+			if (!$len)
+				return null;
+			if ($len <= 10)
+				$value .= ' 00:00:00';
+
+			$value = new Phpr_Datetime($value);
+			return $value->format($format);
+		}
+
+		return __('Not set', true);
+	}
 }
