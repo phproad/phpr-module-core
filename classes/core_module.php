@@ -25,7 +25,7 @@ class Core_Module extends Core_Module_Base
 
     public function subscribe_access_points()
     {
-        return array('_cron'=>'execute_cron');
+        return array('api_cron'=>'execute_cron');
     }
 
     public function execute_cron()
