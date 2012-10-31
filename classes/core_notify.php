@@ -16,8 +16,11 @@ class Core_Notify
         // if (!User_Preference::get_preference($provider->user_id, 'service', 'email_job_booked'))
         //     return;
 
-        $notify->trigger_email($params);
-        $notify->trigger_sms($params);
+        if (Phpr_ModuleManager::module_exists('email'))
+            $notify->trigger_email($params);
+        
+        if (Phpr_ModuleManager::module_exists('sms'))
+            $notify->trigger_sms($params);
 
         return $notify;
     }
