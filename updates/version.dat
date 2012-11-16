@@ -1,2 +1,3 @@
 #1 First version
-#2 Adds better logic for generating URI codes, include Notification engine
+#2 Added better logic for generating URI codes, include Notification engine
+#3 Added common settings page with locale settings

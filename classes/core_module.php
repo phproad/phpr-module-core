@@ -23,6 +23,11 @@ class Core_Module extends Core_Module_Base
         $localization->load();
     }
 
+    public function build_admin_settings($settings)
+    {
+        $settings->add('/core/setup', 'Common Settings', 'Customise core features', '/modules/core/assets/images/core_config.png', 10);
+    }
+
     public function subscribe_access_points()
     {
         return array('api_cron'=>'execute_cron');
