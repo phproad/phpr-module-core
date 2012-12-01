@@ -88,7 +88,7 @@ class Core_Update_Manager
 
 	protected function get_hash()
 	{
-		$hash = Db_ModuleParameters::get('core', 'hash');
+		$hash = Db_Module_Parameters::get('core', 'hash');
 		if (!$hash)
 			throw new Phpr_ApplicationException('License information not found');
 
@@ -110,7 +110,7 @@ class Core_Update_Manager
 			throw new Phpr_ApplicationException('Invalid server response.');
 
 		if (!count($response['data']))
-			Db_ModuleParameters::set('admin', 'updates_available', 0);
+			Db_Module_Parameters::set('admin', 'updates_available', 0);
 
 		return $response;
 	}
@@ -185,9 +185,9 @@ class Core_Update_Manager
 
 			$this->update_cleanup($files);
 
-			Db_UpdateManager::update();
+			Db_Update_Manager::update();
 
-			Db_ModuleParameters::set('admin', 'updates_available', 0);
+			Db_Module_Parameters::set('admin', 'updates_available', 0);
 
 		}
 		catch (Exception $ex)
@@ -213,12 +213,12 @@ class Core_Update_Manager
 		if (!Phpr::$config->get('AUTO_CHECK_UPDATES', true))
 			return false;
 
-		if (Db_ModuleParameters::get('admin', 'updates_available', false))
+		if (Db_Module_Parameters::get('admin', 'updates_available', false))
 			return true;
 
 		try
 		{
-			$last_check = Db_ModuleParameters::get('admin', 'last_update_check', null);
+			$last_check = Db_Module_Parameters::get('admin', 'last_update_check', null);
 			if (strlen($last_check))
 			{
 				try
@@ -238,10 +238,10 @@ class Core_Update_Manager
 					$update_data = Core_Update_Manager::create()->request_update_list();
 					$updates = $update_data['data'];
 
-					Db_ModuleParameters::set('admin', 'updates_available', count($updates));
+					Db_Module_Parameters::set('admin', 'updates_available', count($updates));
 				} catch (Exception $ex) {}
 
-				$last_check = Db_ModuleParameters::set('admin', 'last_update_check',
+				$last_check = Db_Module_Parameters::set('admin', 'last_update_check',
 					Phpr_DateTime::now()->format(Phpr_DateTime::universalDateTimeFormat)
 				);
 			}
