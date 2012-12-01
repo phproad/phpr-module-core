@@ -1,3 +1,4 @@
 #1 First version
 #2 Added better logic for generating URI codes, include Notification engine
 #3 Added common settings page with locale settings
+#4 Improvements to framework structure

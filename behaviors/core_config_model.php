@@ -11,7 +11,7 @@
  *
  */
 
-class Core_Config_Model extends Phpr_Extension
+class Core_Config_Model extends Phpr_Extension_Base
 {
 
     protected $_model;

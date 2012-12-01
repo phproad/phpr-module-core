@@ -5,7 +5,7 @@
  * Use this class to add file attachments fields to your models.
  */
 
-class Core_Model_Attachments extends Phpr_Extension
+class Core_Model_Attachments extends Phpr_Extension_Base
 {
 	protected $_model;
 	

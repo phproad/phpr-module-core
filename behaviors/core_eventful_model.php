@@ -34,7 +34,7 @@
  *
  */
 
-class Core_Eventful_Model extends Phpr_Extension
+class Core_Eventful_Model extends Phpr_Extension_Base
 {
 
     protected $_model;
