@@ -39,18 +39,42 @@ class Core_Notify
             }
         }
         
-        $template = Email_Template::create()->find_by_code($info->code);
-        if (!$template)
+        // Fetch standard email
+        if ($notifier->get_content() !== null)
         {
-            $template = Email_Template::create();
-            $template->code = $info->code;
-            $template->description = $info->description;
-            $template->subject = $notifier->get_subject();
-            $template->content = $notifier->get_content();
-            $template->save();
+            $template = Email_Template::create()->find_by_code($info->code);
+            if (!$template)
+            {
+                $template = Email_Template::create();
+                $template->code = $info->code;
+                $template->description = $info->description;
+                $template->subject = $notifier->get_subject();
+                $template->content = $notifier->get_content();
+                $template->save();
+            }
+
+            $notifier->on_send_email($template, $params);
         }
 
-        $notifier->on_send_email($template, $params);
+        // Fetch internal email
+        if ($notifier->get_internal_content() !== null)
+        {
+            $internal_code = $info->code.'_internal';
+            $internal_description = $info->description . ' (Internal)';
+            $template = Email_Template::create()->find_by_code($internal_code);
+            if (!$template)
+            {
+                $template = Email_Template::create();
+                $template->code = $internal_code;
+                $template->description = $internal_description;
+                $template->subject = $notifier->get_internal_subject();
+                $template->content = $notifier->get_internal_content();
+                $template->save();
+            }
+
+            $notifier->on_send_internal_email($template, $params);
+        }
+
     }    
 
     public function trigger_sms($params=array())

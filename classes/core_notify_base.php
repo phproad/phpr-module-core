@@ -15,12 +15,21 @@ class Core_Notify_Base
     
     // Subject
     public function get_subject() { }
+    
+    // Subject for internal staff
+    public function get_internal_subject() { }
 
     // Long content (eg: Email)
     public function get_content() { }
+
+    // Long content for internal staff
+    public function get_internal_content() { }
     
     // Short content (eg: SMS)
     public function get_summary() { }
+    
+    // Short content for internal staff
+    public function get_internal_summary() { }
 
     // Email
     public function on_send_email($template, $params=array()) { }
