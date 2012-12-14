@@ -44,7 +44,7 @@ class Core_Setup extends Admin_Settings_Controller
         }
         catch (Exception $ex)
         {
-            Phpr::$response->ajaxReportException($ex, true, true);
+            Phpr::$response->ajax_report_exception($ex, true, true);
         }
     }
 
