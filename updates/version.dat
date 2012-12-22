@@ -2,3 +2,4 @@
 #2 Added better logic for generating URI codes, include Notification engine
 #3 Added common settings page with locale settings
 #4 Improvements to framework structure
+#5 Add centralized attachment behavior
