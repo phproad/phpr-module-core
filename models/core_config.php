@@ -33,6 +33,24 @@ class Core_Config extends Core_Settings_Model
         );
     }
 
+    public function get_locale_reigon()
+    {
+        if ($this->locale_code)
+            return 'US';
+
+        $parts = explode('_', $this->locale_code);
+        return isset($parts[1]) ? strtoupper($parts[1]) : null;
+    }
+
+    public function get_locale_language()
+    {        
+        if ($this->locale_code)
+            return 'EN';
+
+        $parts = explode('_', $this->locale_code);
+        return isset($parts[0]) ? strtoupper($parts[0]) : null;
+    }
+
     public function is_configured()
     {
         $config = self::create();
