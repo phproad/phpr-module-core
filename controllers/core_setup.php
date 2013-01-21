@@ -38,7 +38,7 @@ class Core_Setup extends Admin_Settings_Controller
         try
         {
             $settings = Core_Config::create();
-            $settings->save(post($this->form_model_class, array()), $this->formGetEditSessionKey());
+            $settings->save(post($this->form_model_class, array()), $this->form_get_edit_session_key());
             Phpr::$session->flash['success'] = 'Admin configuration has been successfully saved.';
             Phpr::$response->redirect(url('admin/settings/'));
         }
