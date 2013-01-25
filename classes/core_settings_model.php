@@ -54,7 +54,7 @@ class Core_Settings_Model extends Db_ActiveRecord
         return $form_field;
     }
 
-    public function before_save($deferred_session_key = null)
+    public function before_save($session_key = null)
     {
         $this->validate_config_on_save($this);
 
