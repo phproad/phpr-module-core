@@ -16,7 +16,7 @@ class Core_Settings
 
 	protected function load_items()
 	{
-		$modules = Core_Module_Manager::find_modules();
+		$modules = Core_Module_Manager::get_modules();
 
 		foreach ($modules as $id=>$module)
 		{

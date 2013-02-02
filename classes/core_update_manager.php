@@ -73,7 +73,7 @@ class Core_Update_Manager
 	{
 		$result = array();
 
-		$modules = Core_Module_Manager::find_modules();
+		$modules = Core_Module_Manager::get_modules();
 		foreach ($modules as $module)
 		{
 			$module_info = $module->get_module_info();

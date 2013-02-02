@@ -9,7 +9,7 @@ Phpr::$events->fire_event('core:on_initialize');
 // Init all modules
 //
 
-Core_Module_Manager::find_modules();
+Core_Module_Manager::get_modules();
 
 // Add notify types to class loader
 // 
