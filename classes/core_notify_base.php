@@ -41,7 +41,7 @@ class Core_Notify_Base
     public function get_partial_path($partial_name = null)
     {
         $class_name = get_class($this);
-        $class_path = File_Path::find_path_to_class($class_name);
+        $class_path = File_Path::get_path_to_class($class_name);
         return $class_path.'/'.strtolower($class_name).'/'.$partial_name;
     }
 }
