@@ -52,10 +52,10 @@ class Core_Eventful_Model extends Phpr_Extension_Base
         if (isset($model->eventful_model_name))
             $this->eventful_model_name = $model->eventful_model_name;
 
-        $this->_model->add_event('onDefineColumns', $this, 'eventful_model_define_columns');
-        $this->_model->add_event('onAfterLoad', $this, 'eventful_model_after_load');
-        $this->_model->add_event('onBeforeUpdate', $this, 'eventful_model_before_update');
-        $this->_model->add_event('onBeforeCreate', $this, 'eventful_model_before_create');
+        $this->_model->add_event('on_define_columns', $this, 'eventful_model_define_columns');
+        $this->_model->add_event('on_after_load', $this, 'eventful_model_after_load');
+        $this->_model->add_event('on_before_update', $this, 'eventful_model_before_update');
+        $this->_model->add_event('on_before_create', $this, 'eventful_model_before_create');
     }
 
     public function eventful_model_after_load()
@@ -89,7 +89,7 @@ class Core_Eventful_Model extends Phpr_Extension_Base
         {
             $form_field = $this->_model->find_form_field($column_name);
             if ($form_field)
-                $form_field->optionsMethod('get_added_field_options');
+                $form_field->options_method('get_added_field_options');
         }
     }
 

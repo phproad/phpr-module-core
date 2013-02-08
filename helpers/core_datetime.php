@@ -33,9 +33,9 @@ class Core_DateTime
 		$hours = $datetime->getHours();
 		$minutes = $datetime->getMinutes();
 
-		$word_day = strlen($word_day > 1) ? Phpr_Strings::word_form($days, $word_day) : $word_day;
-		$word_hour = strlen($word_hour > 1) ? Phpr_Strings::word_form($days, $word_hour) : $word_hour;
-		$word_minute = strlen($word_minute > 1) ? Phpr_Strings::word_form($days, $word_minute) : $word_minute;
+		$word_day = strlen($word_day > 1) ? Phpr_String::word_form($days, $word_day) : $word_day;
+		$word_hour = strlen($word_hour > 1) ? Phpr_String::word_form($days, $word_hour) : $word_hour;
+		$word_minute = strlen($word_minute > 1) ? Phpr_String::word_form($days, $word_minute) : $word_minute;
 
 		$datetime_days = ($days > 0) ? $days . $word_day : "";
 		$datetime_hours = ($hours > 0) ? $hours . $word_hour : "";

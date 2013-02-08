@@ -12,7 +12,7 @@ class Core_Config extends Core_Settings_Model
     
     protected function build_form()
     {
-        $this->add_field('locale_code', 'Locale Setting', 'full', db_varchar)->renderAs(frm_dropdown)->tab('General')->comment('Used for determining date format, etc.');
+        $this->add_field('locale_code', 'Locale Setting', 'full', db_varchar)->render_as(frm_dropdown)->tab('General')->comment('Used for determining date format, etc.');
     }
 
     protected function init_config_data()
