@@ -226,7 +226,7 @@ class Core_Update_Manager
 					$last_check_time = new Phpr_DateTime($last_check);
 
 					$check_interval = Phpr::$config->get('UPDATE_CHECK_INTERVAL', 24);
-					if (Phpr_DateTime::now()->substractDateTime($last_check_time)->getHoursTotal() > $check_interval)
+					if (Phpr_DateTime::now()->substract_datetime($last_check_time)->get_hours_total() > $check_interval)
 						$last_check = false;
 				} catch (Exception $ex) {}
 			}
@@ -242,7 +242,7 @@ class Core_Update_Manager
 				} catch (Exception $ex) {}
 
 				$last_check = Db_Module_Parameters::set('admin', 'last_update_check',
-					Phpr_DateTime::now()->format(Phpr_DateTime::universalDateTimeFormat)
+					Phpr_DateTime::now()->format(Phpr_DateTime::universal_datetime_format)
 				);
 			}
 		} catch (Exception $ex) {}

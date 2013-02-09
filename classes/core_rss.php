@@ -39,7 +39,7 @@ class Core_Rss
     {
         $result = null;
         $gmt_format = '%a, %d %b %Y %H:%M:%S GMT';
-        $gmt_now = Phpr_DateTime::gmtNow()->format($gmt_format);
+        $gmt_now = Phpr_DateTime::gmt_now()->format($gmt_format);
 
         $result .= '<?xml version="1.0" encoding="UTF-8"?>';
         $result .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'."\n";

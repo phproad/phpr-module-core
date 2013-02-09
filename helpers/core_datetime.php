@@ -14,12 +14,12 @@ class Core_DateTime
 		$return_array = $add_items;
 		$time = strtotime("00:00:00");
 		$datetime = new Phpr_DateTime();
-		$datetime->setPHPDateTime($time);
+		$datetime->set_php_datetime($time);
 		$return_array["00:00:00"] = $datetime->format('%I:%M %p');
 		for ($i = 1; $i < 48; $i++)
 		{
 			$time = strtotime("+ 30 minutes", $time);
-			$datetime->setPHPDateTime($time);
+			$datetime->set_php_datetime($time);
 			$key = $datetime->format('%H:%M:%S');
 			$return_array[$key] = $datetime->format('%I:%M %p');
 		}
@@ -29,9 +29,9 @@ class Core_DateTime
 
 	public static function interval_as_string($datetime, $word_day='day', $word_hour='hr', $word_minute='min',  $empty='less than a minute')
 	{
-		$days = $datetime->getDays();
-		$hours = $datetime->getHours();
-		$minutes = $datetime->getMinutes();
+		$days = $datetime->get_days();
+		$hours = $datetime->get_hours();
+		$minutes = $datetime->get_minutes();
 
 		$word_day = strlen($word_day > 1) ? Phpr_String::word_form($days, $word_day) : $word_day;
 		$word_hour = strlen($word_hour > 1) ? Phpr_String::word_form($days, $word_hour) : $word_hour;
@@ -41,7 +41,10 @@ class Core_DateTime
 		$datetime_hours = ($hours > 0) ? $hours . $word_hour : "";
 		$datetime_mins = ($minutes > 0) ? $minutes . $word_minute : "";
 
-		$datetime = ($datetime_days=="" && $datetime_mins=="" && $datetime_hours=="") ? $empty : trim($datetime_days . " " . $datetime_hours . " " . $datetime_mins);
+		$datetime = ($datetime_days=="" && $datetime_mins=="" && $datetime_hours=="") 
+			? $empty 
+			: trim($datetime_days . " " . $datetime_hours . " " . $datetime_mins);
+			
 		return $datetime;
 	}
 
@@ -50,7 +53,7 @@ class Core_DateTime
 		if (!($datetime instanceof Phpr_DateTime))
 			return $default_text;
 
-		return Phpr_DateTime::now()->substractDateTime($datetime)->intervalAsString();		
+		return Phpr_DateTime::now()->substract_datetime($datetime)->interval_as_string();		
 	}
 
 	public static function interval_from_now($datetime, $default_text='Some time')
@@ -58,7 +61,7 @@ class Core_DateTime
 		if (!($datetime instanceof Phpr_DateTime))
 			return $default_text;
 
-		return $datetime->substractDateTime(Phpr_DateTime::now())->intervalAsString();		
+		return $datetime->substract_datetime(Phpr_DateTime::now())->interval_as_string();		
 	}
 
 	public static function format_safe($value, $format='%x')
