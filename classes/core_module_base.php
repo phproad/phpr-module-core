@@ -83,7 +83,7 @@ abstract class Core_Module_Base
 
     // Builds admin user permissions
     //
-    // Usage: $host->add_permission_field($this, 'manage_cms', 'Manage CMS')->render_as(frm_checkbox)->comment('Description');
+    // Usage: $host->add_permission_field($this, 'manage_cms', 'Manage CMS')->display_as(frm_checkbox)->comment('Description');
     //
     public function build_admin_permissions($host)
     {
@@ -92,7 +92,7 @@ abstract class Core_Module_Base
 
     // Builds user preferences
     //
-    // Usage: $host->add_preference_field($this, 'allow_emails', 'Allow Emails', true)->render_as(frm_checkbox)->comment('Description');
+    // Usage: $host->add_preference_field($this, 'allow_emails', 'Allow Emails', true)->display_as(frm_checkbox)->comment('Description');
     //
     public function build_user_preferences($host)
     {
