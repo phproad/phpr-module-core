@@ -181,7 +181,7 @@ class Core_Update_Manager
 			}
 
 			foreach ($files as $file)
-				Core_Zip::unzip(PATH_APP, $file);
+				File_Zip::unzip(PATH_APP, $file);
 
 			$this->update_cleanup($files);
 
