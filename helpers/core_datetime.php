@@ -70,10 +70,10 @@ class Core_DateTime
 			return $value->format($format);
 		else
 		{
-			$len = strlen($value);
-			if (!$len)
+			$length = strlen($value);
+			if (!$length)
 				return null;
-			if ($len <= 10)
+			if ($length <= 10)
 				$value .= ' 00:00:00';
 
 			$value = new Phpr_Datetime($value);

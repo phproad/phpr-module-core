@@ -13,10 +13,8 @@ class Core_Update_Manager
 		return self::$instance;
 	}
 
-	// ### TODO LICENSE_POINT
 	protected function request_server_data($url, $fields = array())
 	{
-
 		$uc_url = Phpr::$config->get('UPDATE_CENTER');
 		if (!strlen($uc_url))
 			throw new Exception('Update server cannot be found');
@@ -48,9 +46,6 @@ class Core_Update_Manager
 
 		if (!$result || !strlen($result))
 			throw new Exception("Error connecting to the update server");
-
-
-			//throw new Exception("Error connecting to the update server".'http://'.$uc_url.'/'.$url);
 
 		$result_data = false;
 		try
@@ -123,8 +118,8 @@ class Core_Update_Manager
 		{
 			$update_list = $this->get_module_versions();
 			$fields = array(
-				'modules'=>serialize(array_keys($update_list)),
-				'url'=>base64_encode(root_url('/', true, 'http'))
+				'modules' => serialize(array_keys($update_list)),
+				'url' => base64_encode(root_url('/', true, 'http'))
 			);
 		}
 		else
@@ -133,8 +128,8 @@ class Core_Update_Manager
 			$update_list = $update_data['data'];
 
 			$fields = array(
-				'modules'=>serialize(array_keys($update_list)),
-				'url'=>base64_encode(root_url('/', true, 'http'))
+				'modules' => serialize(array_keys($update_list)),
+				'url' => base64_encode(root_url('/', true, 'http'))
 			);
 		}
 
@@ -247,6 +242,5 @@ class Core_Update_Manager
 			}
 		} catch (Exception $ex) {}
 	}
-
 
 }
