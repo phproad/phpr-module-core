@@ -49,7 +49,7 @@ class Core_Rss
 		$result .= '<description>'.self::cdata_wrap($this->description).'</description>'."\n";
 		$result .= '<pubDate>'.$gmt_now.'</pubDate>'."\n";
 		$result .= '<lastBuildDate>'.$gmt_now.'</lastBuildDate>'."\n";
-		$result .= '<generator>ScriptsAhoy!</generator>'."\n";
+		$result .= '<generator>PHPR</generator>'."\n";
 		
 		foreach ($this->entries as $entry)
 		{

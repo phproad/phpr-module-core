@@ -1,6 +1,6 @@
 <?php
 
-class Core_Settings_Model extends Db_ActiveRecord
+class Core_Settings_Base extends Db_ActiveRecord
 {
 	public $table_name = 'core_settings';
 

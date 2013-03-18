@@ -1,6 +1,6 @@
 <?php
 
-class Core_Config extends Core_Settings_Model
+class Core_Config extends Core_Settings_Base
 {
 	public $record_code = 'core_config';
 
