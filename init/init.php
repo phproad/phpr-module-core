@@ -10,8 +10,3 @@ Phpr::$events->fire_event('core:on_initialize');
 //
 
 Core_Module_Manager::get_modules();
-
-// Add notify types to class loader
-// 
-
-Phpr::$class_loader->add_module_directory('notify_types');
