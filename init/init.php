@@ -4,7 +4,7 @@
 //
 
 Phpr::$events = new Core_Events();
-Phpr::$events->fire_event('core:on_initialize');
+Phpr::$events->fire_event('phpr:on_initialize');
 
 // Init all modules
 //
