@@ -15,7 +15,7 @@ class Core_Module extends Core_Module_Base
 
 	public function subscribe_events()
 	{
-		Phpr::$events->add_event('phpr:onAfterLocaleInitialized', $this, 'on_after_phpr_locale_initialized');
+		Phpr::$events->add_event('phpr:on_after_locale_initialized', $this, 'on_after_phpr_locale_initialized');
 	}
 
 	function on_after_phpr_locale_initialized($localization)

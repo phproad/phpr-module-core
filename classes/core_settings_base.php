@@ -22,7 +22,7 @@ class Core_Settings_Base extends Db_ActiveRecord
 			$obj = new $class_name();
 		}
 
-		$obj->define_form_fields();
+		$obj->init_form_fields();
 
 		self::$loaded_objects[$this->record_code] = $obj;
 
