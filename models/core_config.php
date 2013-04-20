@@ -30,6 +30,7 @@ class Core_Config extends Core_Settings_Base
 			'en_CA' => 'English - United Kingdom',
 			'fr_FR' => 'French',
 			'ru_RU' => 'Russian',
+			'es_CL' => 'Spanish - Chile',
 		);
 	}
 
