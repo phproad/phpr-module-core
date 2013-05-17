@@ -2,8 +2,11 @@
 
 class Core_Update_Manager
 {
-
 	protected static $instance = null;
+
+	const uri_get_hashes = 'get_file_hashes/%s';
+	const uri_get_updates = 'get_update_list/%s';
+	const uri_get_file = 'get_file/%s/%s';
 
 	public static function create()
 	{
@@ -13,7 +16,7 @@ class Core_Update_Manager
 		return self::$instance;
 	}
 
-	protected function request_server_data($url, $fields = array())
+	protected function request_server_data($url, $params = array())
 	{
 		$uc_url = Phpr::$config->get('UPDATE_CENTER');
 		if (!strlen($uc_url))
@@ -22,18 +25,13 @@ class Core_Update_Manager
 		$result = null;
 		try
 		{
-			$poststring = array();
-
-			foreach ($fields as $key=>$val)
-				$poststring[] = urlencode($key)."=".urlencode($val);
-
-			$poststring = implode('&', $poststring);
+			$post_data = http_build_query($params, '', '&');
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, 'http://'.$uc_url.'/'.$url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $poststring);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 			$result = curl_exec($ch);
 
@@ -95,11 +93,11 @@ class Core_Update_Manager
 	{
 		$hash = $hash ? $hash : $this->get_hash();
 
-		$fields = array(
-			'versions'=>serialize($this->get_module_versions()),
-			'url'=>base64_encode(root_url('/', true, 'http'))
+		$params = array(
+			'versions' => serialize($this->get_module_versions()),
+			'url' => base64_encode(root_url('/', true, 'http'))
 		);
-		$response = $this->request_server_data('get_update_list/'.$hash, $fields);
+		$response = $this->request_server_data('get_update_list/'.$hash, $params);
 
 		if (!isset($response['data']))
 			throw new Phpr_ApplicationException('Invalid server response.');
@@ -117,7 +115,7 @@ class Core_Update_Manager
 		if ($force)
 		{
 			$update_list = $this->get_module_versions();
-			$fields = array(
+			$params = array(
 				'modules' => serialize(array_keys($update_list)),
 				'url' => base64_encode(root_url('/', true, 'http'))
 			);
@@ -127,7 +125,7 @@ class Core_Update_Manager
 			$update_data = $this->request_update_list();
 			$update_list = $update_data['data'];
 
-			$fields = array(
+			$params = array(
 				'modules' => serialize(array_keys($update_list)),
 				'url' => base64_encode(root_url('/', true, 'http'))
 			);
@@ -137,7 +135,7 @@ class Core_Update_Manager
 			throw new Exception('The directory ('.PATH_APP.') is not writable for PHP.');
 
 		$hash = $this->get_hash();
-		$result = $this->request_server_data('get_file_hashes/'.$hash, $fields);
+		$result = $this->request_server_data('get_file_hashes/'.$hash, $params);
 		$file_hashes = $result['data']['file_hashes'];
 
 		if (!is_array($file_hashes))
