@@ -2,8 +2,11 @@
 
 class Core_Update_Manager
 {
-
 	protected static $instance = null;
+
+	const uri_get_hashes = 'get_file_hashes/%s';
+	const uri_get_updates = 'get_update_list/%s';
+	const uri_get_file = 'get_file/%s/%s';
 
 	public static function create()
 	{
@@ -13,7 +16,7 @@ class Core_Update_Manager
 		return self::$instance;
 	}
 
-	protected function request_server_data($url, $fields = array())
+	protected function request_server_data($url, $params = array())
 	{
 		$uc_url = Phpr::$config->get('UPDATE_CENTER');
 		if (!strlen($uc_url))
@@ -22,18 +25,13 @@ class Core_Update_Manager
 		$result = null;
 		try
 		{
-			$poststring = array();
-
-			foreach ($fields as $key=>$val)
-				$poststring[] = urlencode($key)."=".urlencode($val);
-
-			$poststring = implode('&', $poststring);
+			$post_data = http_build_query($params, '', '&');
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, 'http://'.$uc_url.'/'.$url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $poststring);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 			$result = curl_exec($ch);
 
@@ -83,7 +81,7 @@ class Core_Update_Manager
 
 	protected function get_hash()
 	{
-		$hash = Db_Module_Parameters::get('core', 'hash');
+		$hash = Phpr_Module_Parameters::get('core', 'hash');
 		if (!$hash)
 			throw new Phpr_ApplicationException('License information not found');
 
@@ -95,17 +93,17 @@ class Core_Update_Manager
 	{
 		$hash = $hash ? $hash : $this->get_hash();
 
-		$fields = array(
-			'versions'=>serialize($this->get_module_versions()),
-			'url'=>base64_encode(root_url('/', true, 'http'))
+		$params = array(
+			'versions' => serialize($this->get_module_versions()),
+			'url' => base64_encode(root_url('/', true, 'http'))
 		);
-		$response = $this->request_server_data('get_update_list/'.$hash, $fields);
+		$response = $this->request_server_data('get_update_list/'.$hash, $params);
 
 		if (!isset($response['data']))
 			throw new Phpr_ApplicationException('Invalid server response.');
 
 		if (!count($response['data']))
-			Db_Module_Parameters::set('admin', 'updates_available', 0);
+			Phpr_Module_Parameters::set('admin', 'updates_available', 0);
 
 		return $response;
 	}
@@ -117,7 +115,7 @@ class Core_Update_Manager
 		if ($force)
 		{
 			$update_list = $this->get_module_versions();
-			$fields = array(
+			$params = array(
 				'modules' => serialize(array_keys($update_list)),
 				'url' => base64_encode(root_url('/', true, 'http'))
 			);
@@ -127,7 +125,7 @@ class Core_Update_Manager
 			$update_data = $this->request_update_list();
 			$update_list = $update_data['data'];
 
-			$fields = array(
+			$params = array(
 				'modules' => serialize(array_keys($update_list)),
 				'url' => base64_encode(root_url('/', true, 'http'))
 			);
@@ -137,7 +135,7 @@ class Core_Update_Manager
 			throw new Exception('The directory ('.PATH_APP.') is not writable for PHP.');
 
 		$hash = $this->get_hash();
-		$result = $this->request_server_data('get_file_hashes/'.$hash, $fields);
+		$result = $this->request_server_data('get_file_hashes/'.$hash, $params);
 		$file_hashes = $result['data']['file_hashes'];
 
 		if (!is_array($file_hashes))
@@ -182,7 +180,7 @@ class Core_Update_Manager
 
 			Db_Update_Manager::update();
 
-			Db_Module_Parameters::set('admin', 'updates_available', 0);
+			Phpr_Module_Parameters::set('admin', 'updates_available', 0);
 
 		}
 		catch (Exception $ex)
@@ -208,12 +206,12 @@ class Core_Update_Manager
 		if (!Phpr::$config->get('AUTO_CHECK_UPDATES', true))
 			return false;
 
-		if (Db_Module_Parameters::get('admin', 'updates_available', false))
+		if (Phpr_Module_Parameters::get('admin', 'updates_available', false))
 			return true;
 
 		try
 		{
-			$last_check = Db_Module_Parameters::get('admin', 'last_update_check', null);
+			$last_check = Phpr_Module_Parameters::get('admin', 'last_update_check', null);
 			if (strlen($last_check))
 			{
 				try
@@ -233,10 +231,10 @@ class Core_Update_Manager
 					$update_data = Core_Update_Manager::create()->request_update_list();
 					$updates = $update_data['data'];
 
-					Db_Module_Parameters::set('admin', 'updates_available', count($updates));
+					Phpr_Module_Parameters::set('admin', 'updates_available', count($updates));
 				} catch (Exception $ex) {}
 
-				$last_check = Db_Module_Parameters::set('admin', 'last_update_check',
+				$last_check = Phpr_Module_Parameters::set('admin', 'last_update_check',
 					Phpr_DateTime::now()->format(Phpr_DateTime::universal_datetime_format)
 				);
 			}
