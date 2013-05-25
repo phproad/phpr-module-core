@@ -4,9 +4,9 @@ class Core_Update_Manager
 {
 	protected static $instance = null;
 
-	const uri_get_hashes = 'get_file_hashes/%s';
-	const uri_get_updates = 'get_update_list/%s';
-	const uri_get_file = 'get_file/%s/%s';
+	const uri_get_update_list = 'update/list/get';
+	const uri_get_update_hashes = 'update/hashes/get';
+	const uri_get_update_file = 'update/file/get';
 
 	public static function create()
 	{
@@ -20,7 +20,7 @@ class Core_Update_Manager
 	{
 		$uc_url = Phpr::$config->get('UPDATE_CENTER');
 		if (!strlen($uc_url))
-			throw new Exception('Update server cannot be found');
+			throw new Exception('Update server cannot be found.');
 
 		$result = null;
 		try
@@ -36,28 +36,28 @@ class Core_Update_Manager
 			$result = curl_exec($ch);
 
 			if (curl_errno($ch))
-				throw new Phpr_ApplicationException("Could not connect to the update server");
+				throw new Phpr_ApplicationException("Could not connect to the update server.");
 			else
 				curl_close($ch);
 
 		} catch (Exception $ex) {}
 
 		if (!$result || !strlen($result))
-			throw new Exception("Error connecting to the update server");
+			throw new Exception("Error connecting to the update server.");
 
 		$result_data = false;
 		try
 		{
-			$result_data = @unserialize($result);
+			$result_data = @json_decode($result);
 		} catch (Exception $ex) {
-			throw new Exception("Invalid response from the update server");
+			throw new Exception("Invalid response from the update server (#1).");
 		}
 
 		if ($result_data === false)
-			throw new Exception("Invalid response from the update server");
+			throw new Exception("Invalid response from the update server (#2).");
 
-		if ($result_data['error'])
-			throw new Exception($result_data['error']);
+		if (isset($result_data->error) && $result_data->error)
+			throw new Exception($result_data->error);
 
 		return $result_data;
 	}
@@ -81,12 +81,13 @@ class Core_Update_Manager
 
 	protected function get_hash()
 	{
-		$hash = Phpr_Module_Parameters::get('core', 'hash');
+		$hash = Phpr_Module_Parameters::get('core', 'license_hash');
 		if (!$hash)
-			throw new Phpr_ApplicationException('License information not found');
+			throw new Phpr_ApplicationException('License information not found.');
 
 		$framework = Phpr_SecurityFramework::create();
-		return $framework->decrypt(base64_decode($hash));
+		$hash = $framework->decrypt(base64_decode($hash));
+		return $hash;
 	}
 
 	public function request_update_list($hash = null)
@@ -94,23 +95,25 @@ class Core_Update_Manager
 		$hash = $hash ? $hash : $this->get_hash();
 
 		$params = array(
+			'hash' => $hash,
 			'versions' => serialize($this->get_module_versions()),
 			'url' => base64_encode(root_url('/', true, 'http'))
 		);
-		$response = $this->request_server_data('get_update_list/'.$hash, $params);
+		$response = $this->request_server_data(self::uri_get_update_list, $params);
 
-		if (!isset($response['data']))
-			throw new Phpr_ApplicationException('Invalid server response.');
+		if (!isset($response->data))
+			throw new Phpr_ApplicationException('Invalid response from the update server (#3).');
 
-		if (!count($response['data']))
+		if (!count($response->data))
 			Phpr_Module_Parameters::set('admin', 'updates_available', 0);
 
-		return $response;
+		return (array)$response->data;
 	}
 
 	public function update_application($force = false)
 	{
 		@set_time_limit(3600);
+		$files = array();
 
 		if ($force)
 		{
@@ -122,9 +125,7 @@ class Core_Update_Manager
 		}
 		else
 		{
-			$update_data = $this->request_update_list();
-			$update_list = $update_data['data'];
-
+			$update_list = $this->request_update_list();
 			$params = array(
 				'modules' => serialize(array_keys($update_list)),
 				'url' => base64_encode(root_url('/', true, 'http'))
@@ -134,47 +135,60 @@ class Core_Update_Manager
 		if (!is_writable(PATH_APP) || !is_writable(PATH_APP.'/modules') || !is_writable(PATH_SYSTEM))
 			throw new Exception('The directory ('.PATH_APP.') is not writable for PHP.');
 
-		$hash = $this->get_hash();
-		$result = $this->request_server_data('get_file_hashes/'.$hash, $params);
-		$file_hashes = $result['data']['file_hashes'];
+		$hash = $params['hash'] = $this->get_hash();
+		$result = $this->request_server_data(self::uri_get_update_hashes, $params);
+	
+		if (!isset($result->data->file_hashes))
+			throw new Exception('Invalid response from server.');
+
+		$file_hashes = (array)$result->data->file_hashes;
 
 		if (!is_array($file_hashes))
-			throw new Exception("Invalid server response");
+			throw new Exception('Invalid response from server.');
 
 		$tmp_path = PATH_APP.'/temp';
 		if (!is_writable($tmp_path))
-			throw new Exception("Cannot create temporary file. Path is not writable: " .$tmp_path);
+			throw new Exception('Cannot create temporary file. Path is not writable: ' .$tmp_path);
 
-		$files = array();
 		try
 		{
-			foreach ($file_hashes as $code=>$file_hash)
+			foreach ($file_hashes as $code => $file_hash)
 			{
 				$tmp_file = $tmp_path.'/'.$code.'.arc';
-				$result = $this->request_server_data('get_file/'.$hash.'/'.$code);
+
+				$result = $this->request_server_data(self::uri_get_update_file, array(
+					'type' => 'module',
+					'hash' => $hash,
+					'code' => $code,
+				));
+
+				if (!$result->data)
+					throw new Phpr_ApplicationException('Server returned empty result.');
 
 				$tmp_save_result = false;
 				try
 				{
-					$tmp_save_result = @file_put_contents($tmp_file, $result['data']);
+					$tmp_save_result = @file_put_contents($tmp_file, base64_decode($result->data));
 				}
 				catch (Exception $ex)
 				{
-					throw new Exception("Error creating temporary file in ".$tmp_path);
+					throw new Phpr_ApplicationException('Error creating temporary file in '.$tmp_path);
 				}
 
 				$files[] = $tmp_file;
 
 				if (!$tmp_save_result)
-					throw new Exception("Error creating temporary file in ".$tmp_path);
+					throw new Phpr_ApplicationException('Error creating temporary file in '.$tmp_path);
 
 				$downloaded_hash = md5_file($tmp_file);
-				if ($downloaded_hash != $file_hash)
-					throw new Exception("Downloaded archive is corrupted. Please try again.");
+				if ($downloaded_hash != $file_hash) {
+					throw new Phpr_ApplicationException('Downloaded archive is corrupted. Please try again.' . $code);
+				}
 			}
 
-			foreach ($files as $file)
-				File_Zip::unzip(PATH_APP, $file);
+			foreach ($files as $file) {
+				File_Zip::unzip($file, PATH_APP);
+			}
 
 			$this->update_cleanup($files);
 
@@ -186,7 +200,6 @@ class Core_Update_Manager
 		catch (Exception $ex)
 		{
 			$this->update_cleanup($files);
-
 			throw $ex;
 		}
 	}
@@ -221,24 +234,25 @@ class Core_Update_Manager
 					$check_interval = Phpr::$config->get('UPDATE_CHECK_INTERVAL', 24);
 					if (Phpr_DateTime::now()->substract_datetime($last_check_time)->get_hours_total() > $check_interval)
 						$last_check = false;
-				} catch (Exception $ex) {}
+				} 
+				catch (Exception $ex) {}
 			}
 
 			if (!$last_check)
 			{
 				try
 				{
-					$update_data = Core_Update_Manager::create()->request_update_list();
-					$updates = $update_data['data'];
-
+					$updates = Core_Update_Manager::create()->request_update_list();
 					Phpr_Module_Parameters::set('admin', 'updates_available', count($updates));
-				} catch (Exception $ex) {}
+				} 
+				catch (Exception $ex) {}
 
 				$last_check = Phpr_Module_Parameters::set('admin', 'last_update_check',
 					Phpr_DateTime::now()->format(Phpr_DateTime::universal_datetime_format)
 				);
 			}
-		} catch (Exception $ex) {}
+		} 
+		catch (Exception $ex) {}
 	}
 
 }
