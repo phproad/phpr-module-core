@@ -107,7 +107,7 @@ class Core_Update_Manager
 		if (!count($response->data))
 			Phpr_Module_Parameters::set('admin', 'updates_available', 0);
 
-		return $response->data;
+		return (array)$response->data;
 	}
 
 	public function update_application($force = false)
@@ -125,9 +125,7 @@ class Core_Update_Manager
 		}
 		else
 		{
-			$update_data = $this->request_update_list();
-			$update_list = $update_data->data;
-
+			$update_list = $this->request_update_list();
 			$params = array(
 				'modules' => serialize(array_keys($update_list)),
 				'url' => base64_encode(root_url('/', true, 'http'))
@@ -143,7 +141,7 @@ class Core_Update_Manager
 		if (!isset($result->data->file_hashes))
 			throw new Exception('Invalid response from server.');
 
-		$file_hashes = get_object_vars($result->data->file_hashes);
+		$file_hashes = (array)$result->data->file_hashes;
 
 		if (!is_array($file_hashes))
 			throw new Exception('Invalid response from server.');
@@ -236,24 +234,25 @@ class Core_Update_Manager
 					$check_interval = Phpr::$config->get('UPDATE_CHECK_INTERVAL', 24);
 					if (Phpr_DateTime::now()->substract_datetime($last_check_time)->get_hours_total() > $check_interval)
 						$last_check = false;
-				} catch (Exception $ex) {}
+				} 
+				catch (Exception $ex) {}
 			}
 
 			if (!$last_check)
 			{
 				try
 				{
-					$update_data = Core_Update_Manager::create()->request_update_list();
-					$updates = $update_data['data'];
-
+					$updates = Core_Update_Manager::create()->request_update_list();
 					Phpr_Module_Parameters::set('admin', 'updates_available', count($updates));
-				} catch (Exception $ex) {}
+				} 
+				catch (Exception $ex) {}
 
 				$last_check = Phpr_Module_Parameters::set('admin', 'last_update_check',
 					Phpr_DateTime::now()->format(Phpr_DateTime::universal_datetime_format)
 				);
 			}
-		} catch (Exception $ex) {}
+		} 
+		catch (Exception $ex) {}
 	}
 
 }
