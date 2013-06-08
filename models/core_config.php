@@ -12,11 +12,13 @@ class Core_Config extends Core_Settings_Base
 	
 	protected function build_form()
 	{
+		$this->add_field('site_name', 'Site Name', 'full', db_varchar)->tab('General');
 		$this->add_field('locale_code', 'Locale Setting', 'full', db_varchar)->display_as(frm_dropdown)->tab('General')->comment('Used for determining date format, etc.');
 	}
 
 	protected function init_config_data()
 	{
+		$this->site_name = Phpr::$config->get('APP_NAME');
 		$this->locale_code = 'en_US';
 	}
 

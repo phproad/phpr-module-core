@@ -8,7 +8,7 @@ class Core_Module extends Core_Module_Base
 		return new Core_Module_Detail(
 			"Core",
 			"Core functions",
-			"PHP Road",
+			"PHPRoad",
 			"http://phproad.com/"
 		);
 	}
