@@ -13,7 +13,7 @@ class Core_Module_Detail
 	public $url;
 	public $description;
 
-	public function __construct($name, $description, $author, $url = null )
+	public function __construct($name, $description, $author, $url = null)
 	{
 		$this->name = $name;
 		$this->author = $author;
