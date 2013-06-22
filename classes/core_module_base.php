@@ -47,7 +47,7 @@ abstract class Core_Module_Base
 	public function subscribe_access_points()
 	{
 		// Usage:
-		// return array('ahoy_frontend_access_url'=>'local_module_method');
+		// return array('phpr_api_access_url'=>'local_module_method');
 		return array();
 	}
 
