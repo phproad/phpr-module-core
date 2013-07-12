@@ -18,9 +18,9 @@ class Core_Module extends Core_Module_Base
 		Phpr::$events->add_event('phpr:on_after_locale_initialized', $this, 'on_after_phpr_locale_initialized');
 	}
 
-	function on_after_phpr_locale_initialized($localization)
+	function on_after_phpr_locale_initialized($locale)
 	{
-		$localization->load();
+		$locale->load();
 	}
 
 	public function build_admin_settings($settings)
