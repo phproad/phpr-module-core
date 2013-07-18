@@ -6,3 +6,4 @@
 #6|1.0.6 Add generic binding table
 #7|1.0.7 Add site name to common settings
 #8|1.0.8 Add admin tray override to module base
+#9|1.0.9 Fix to cron table model
