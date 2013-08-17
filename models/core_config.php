@@ -25,7 +25,7 @@ class Core_Config extends Core_Settings_Base
 	protected function get_locale_code_options($key_value = -1)
 	{
 		return array(
-			'auto' => 'Detect Automatically',
+			// 'auto' => 'Detect Automatically',
 			'en_US' => 'English',
 			'en_AU' => 'English - Australia',
 			'en_CA' => 'English - Canada',
