@@ -33,6 +33,7 @@ class Core_Config extends Core_Settings_Base
 			'fr_FR' => 'French',
 			'ru_RU' => 'Russian',
 			'es_CL' => 'Spanish - Chile',
+			'pt_BR' => 'Portuguese - Brazil',
 		);
 	}
 
